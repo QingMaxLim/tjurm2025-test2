@@ -12,5 +12,20 @@ std::pair<cv::Rect, cv::RotatedRect> get_rect_by_contours(const cv::Mat& input) 
     */
     std::pair<cv::Rect, cv::RotatedRect> res;
     // IMPLEMENT YOUR CODE HERE
+    
+    cv::Mat gray;
+    cv::cvtColor(input,gray,cv::COLOR_BGR2GRAY);
+    cv::Mat bin;
+    cv::threshold(gray,bin,200,255,cv::THRESH_BINARY_INV);
+    std::vector<std::vector<cv::Point>> temp;
+    cv::findContours(bin,temp,cv::RETR_TREE,cv::CHAIN_APPROX_NONE);
+
+    temp.pop_back();
+    cv::Rect rect = cv::boundingRect(temp[0]);
+    res.first = rect;
+
+    cv::RotatedRect rotatedRect = cv::minAreaRect(temp[0]);
+    res.second = rotatedRect;
+
     return res;
 }
